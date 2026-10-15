@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoWatch | Smart Waste Intelligence</title>
+<style>
+:root{--green:#167d55;--dark:#123c30;--bg:#f3f7f4;--muted:#728078;--line:#e5ece7}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:#20352b}
+.app{display:flex;min-height:100vh}
+aside{width:235px;background:#123c30;color:white;padding:26px 17px;flex-shrink:0}
+.logo{font-size:23px;font-weight:800;margin:0 0 5px}
+.logo span{color:#72e0a8}
+.tagline{color:#b9d3c5;font-size:12px;margin-bottom:34px}
+.nav-label{color:#9bb8a8;font-size:11px;margin:25px 10px 10px}
+.nav{display:block;width:100%;text-align:left;padding:13px 12px;color:#d8e8df;border:0;background:transparent;border-radius:9px;margin:4px 0;cursor:pointer;font-size:14px}
+.nav.active,.nav:hover{background:#24654b;color:white}
+.side-note{margin-top:35px;padding:15px;border:1px solid #39735a;border-radius:12px;font-size:12px;color:#d5e8dd;line-height:1.6}
+main{flex:1;min-width:0;padding:30px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:28px}
+.eyebrow{color:var(--green);font-size:12px;font-weight:800;letter-spacing:1px}
+h1{font-size:28px;margin:7px 0}
+.subtitle{color:var(--muted);font-size:14px}
+button{font:inherit;cursor:pointer}
+.primary{border:0;background:var(--green);color:white;padding:12px 17px;border-radius:9px;font-weight:700}
+.primary:hover{background:#106644}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 4px 16px #163e3007}
+.card-top{display:flex;justify-content:space-between;align-items:center}
+.card-icon{font-size:23px;background:#e8f6ed;padding:9px;border-radius:10px}
+.card-label{color:var(--muted);font-size:13px;margin-top:15px}
+.metric{font-size:31px;font-weight:800;margin:8px 0}
+.metric-note{color:var(--green);font-size:12px}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:22px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+h2{font-size:18px;margin:0 0 5px}
+.panel-head p{color:var(--muted);font-size:13px;margin:0}
+.tools{display:flex;flex-wrap:wrap;gap:9px}
+input,select,textarea{border:1px solid #dce6df;border-radius:8px;padding:11px;background:white;font:inherit;max-width:100%}
+input{min-width:180px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}
+th{color:#7b8980;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+th,td{padding:15px 10px;border-bottom:1px solid #edf1ee;white-space:nowrap}
+tbody tr:hover{background:#f8fbf9}
+.pill{display:inline-block;padding:6px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.high{background:#ffe8e6;color:#bd3c32}
+.medium{background:#fff1d7;color:#996300}
+.low{background:#e2f5e9;color:#187449}
+.status{background:#e9f0ff;color:#385d9b}
+.duplicate{color:#a34e17;font-size:11px;font-weight:700}
+.priority{font-weight:800;color:#1a704d}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.bar-row{display:grid;grid-template-columns:105px 1fr 28px;gap:10px;align-items:center;margin:18px 0;font-size:12px}
+.bar{height:9px;background:#edf2ee;border-radius:10px;overflow:hidden}
+.fill{height:100%;background:#35a975;border-radius:10px}
+.hotspot{padding:12px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.hidden{display:none!important}
+#notice{color:var(--green);font-size:13px;margin-top:12px}
+.modal{position:fixed;inset:0;background:#0d251db8;display:none;align-items:center;justify-content:center;padding:20px;z-index:5;overflow-y:auto}
+.modal.open{display:flex}
+.dialog{width:100%;max-width:520px;max-height:92vh;overflow-y:auto;background:white;padding:25px;border-radius:16px}
+.dialog input,.dialog select,.dialog textarea{width:100%;margin:8px 0 15px}
+.dialog label{font-size:13px;font-weight:700}
+.dialog-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.secondary{border:1px solid var(--line);background:white;padding:11px 15px;border-radius:8px}
+.feature-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.feature-row button{flex:1;min-width:125px}
+#photoPreview{display:none;width:100%;max-height:220px;object-fit:contain;border:1px solid var(--line);border-radius:10px;margin:8px 0 14px;background:#f8fbf9}
+.map-frame{width:100%;height:220px;border:1px solid var(--line);border-radius:10px;margin:8px 0 14px}
+.location-note{font-size:12px;color:var(--muted);margin:0 0 12px;overflow-wrap:anywhere}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}aside{width:190px}}
+@media(max-width:650px){.app{display:block}aside{width:100%;padding:16px}.nav{display:inline-block;width:auto;padding:10px}.nav-label,.side-note{display:none}main{padding:17px}.cards,.bottom-grid{grid-template-columns:1fr}h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="logo">Eco<span>Watch.</span></div>
+<div class="tagline">SMART CITY · CLEAN CITY</div>
+<div class="nav-label">WORKSPACE</div>
+<button class="nav active" data-page="dashboard">▦ &nbsp; Dashboard</button>
+<button class="nav" data-page="incidents">◉ &nbsp; All incidents</button>
+<button class="nav" data-page="hotspots">⌖ &nbsp; Repeat hotspots</button>
+<button class="nav" data-page="routes">➜ &nbsp; Inspection routes</button>
+<div class="nav-label">SYSTEM</div>
+<button class="nav" data-page="reports">＋ &nbsp; Report dumping</button>
+<div class="side-note"><strong>🌿 Our mission</strong><br>Smarter inspections. Cleaner neighbourhoods. Better cities.</div>
+</aside>
+<main>
+<header class="top">
+<div>
+<div class="eyebrow">ENVIRONMENTAL INTELLIGENCE</div>
+<h1 id="pageTitle">Waste Intelligence Dashboard</h1>
+<div class="subtitle">Monitor incidents and prioritise municipal inspections.</div>
+</div>
+<button class="primary" id="openForm">＋ Report an incident</button>
+</header>
+<section class="cards">
+<div class="card"><div class="card-top"><span>📋</span><span class="card-icon">▤</span></div><div class="card-label">Total reports</div><div class="metric" id="total">0</div><div class="metric-note">All saved reports</div></div>
+<div class="card"><div class="card-top"><span>🚨</span><span class="card-icon">⚠️</span></div><div class="card-label">High severity</div><div class="metric" id="highCount">0</div><div class="metric-note">Requires priority review</div></div>
+<div class="card"><div class="card-top"><span>🔁</span><span class="card-icon">⌖</span></div><div class="card-label">Repeat locations</div><div class="metric" id="repeatCount">0</div><div class="metric-note">Locations appearing more than once</div></div>
+<div class="card"><div class="card-top"><span>🧹</span><span class="card-icon">✓</span></div><div class="card-label">Pending inspections</div><div class="metric" id="pendingCount">0</div><div class="metric-note">Awaiting field inspection</div></div>
+</section>
+<section class="panel" id="incidentPanel">
+<div class="panel-head">
+<div><h2>Incident command centre</h2><p>Review reports and focus on the most urgent locations.</p></div>
+<div class="tools">
+<input id="search" placeholder="Search location or ID...">
+<select id="filter"><option value="ALL">All severity</option><option value="HIGH">HIGH</option><option value="MEDIUM">MEDIUM</option><option value="LOW">LOW</option></select>
+</div>
+</div>
+<div class="table-wrap">
+<table><thead><tr><th>Report ID</th><th>Location</th><th>Severity</th><th>Priority</th><th>Status</th><th>Match</th></tr></thead><tbody id="rows"></tbody></table>
+</div>
+<div id="notice" role="status" aria-live="polite">Loading saved reports...</div>
+</section>
+<div class="bottom-grid">
+<section class="panel" id="severityPanel">
+<div class="panel-head"><div><h2>Severity overview</h2><p>Distribution of saved reports</p></div></div>
+<div class="bar-row"><span>High</span><div class="bar"><div class="fill" id="highBar" style="width:0%;background:#df6258"></div></div><strong id="highPct">0%</strong></div>
+<div class="bar-row"><span>Medium</span><div class="bar"><div class="fill" id="mediumBar" style="width:0%;background:#e5ac42"></div></div><strong id="mediumPct">0%</strong></div>
+<div class="bar-row"><span>Low</span><div class="bar"><div class="fill" id="lowBar" style="width:0%"></div></div><strong id="lowPct">0%</strong></div>
+</section>
+<section class="panel" id="hotspotPanel">
+<div class="panel-head"><div><h2>Repeat-location watch</h2><p>Locations to check for recurring dumping</p></div></div>
+<div id="hotspots"></div>
+</section>
+</div>
+
+<section class="panel hidden" id="routesPanel">
+<div class="panel-head">
+<div><h2>Daily Inspection Planning</h2><p>Saved reports ordered by severity to help plan field inspections.</p></div>
+<button class="secondary" id="refreshRoutes" type="button">Refresh tasks</button>
+</div>
+<div id="routeSummary" class="subtitle">Inspection tasks will appear here.</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Order</th><th>Report ID</th><th>Location</th><th>Severity</th><th>Status</th><th>Priority</th></tr></thead>
+<tbody id="routeRows"><tr><td colspan="6">Loading inspection tasks...</td></tr></tbody>
+</table>
+</div>
+<p class="subtitle" style="margin-top:14px">Inspection tasks are severity-based. Map links appear when saved coordinates are available.</p>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal">
+<form class="dialog" id="reportForm">
+<h2>Submit a dumping report</h2>
+<p class="subtitle">Add the incident details for municipal review.</p>
+
+<label for="location">Location / area</label>
+<input id="location" required maxlength="255" placeholder="e.g. Main Road, Ward 4">
+
+<label>GPS location</label>
+<div class="feature-row">
+<button type="button" class="secondary" id="getLocation">📍 Get current GPS</button>
+<button type="button" class="secondary" id="clearLocation">Clear GPS</button>
+</div>
+<div id="gpsStatus" class="location-note" role="status">GPS not captured. You can enter the area manually.</div>
+<div id="mapPreviewWrap" class="hidden">
+<iframe id="mapPreview" class="map-frame" title="Selected GPS location map" loading="lazy" referrerpolicy="no-referrer" src="about:blank"></iframe>
+<a id="openMapLink" href="#" target="_blank" rel="noopener noreferrer">Open location in Google Maps</a>
+</div>
+<input type="hidden" id="latitude">
+<input type="hidden" id="longitude">
+
+<label for="description">Description</label>
+<textarea id="description" required rows="3" placeholder="Describe the waste and its impact"></textarea>
+
+<label for="photo">Incident photo (optional)</label>
+<input id="photo" type="file" accept="image/*" capture="environment">
+<img id="photoPreview" alt="Selected incident photo preview">
+<p class="location-note">On supported phones this can open the camera. You can also choose an image from the gallery.</p>
+
+<label for="severity">Environmental severity</label>
+<select id="severity" required>
+<option value="LOW">Low</option>
+<option value="MEDIUM">Medium</option>
+<option value="HIGH">High</option>
+</select>
+
+<div class="dialog-actions">
+<button type="button" class="secondary" id="closeForm">Cancel</button>
+<button class="primary" id="submitReport" type="submit">Save report</button>
+</div>
+<p class="subtitle">The current backend saves location, description and severity. GPS and photo are preview-only until backend support is added.</p>
+</form>
+</div>
+<script>
+"use strict";
+
+const API_URL = "/api/reports";
+let reports = [];
+let apiAvailable = false;
+let photoPreviewUrl = null;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+function normaliseStatus(status) {
+  const value = String(status || "PENDING").toUpperCase();
+  if (value === "PENDING") return "Pending";
+  if (value === "REVIEW" || value === "UNDER_REVIEW") return "Review";
+  if (value === "INSPECTED" || value === "COMPLETED") return "Inspected";
+  return value.charAt(0) + value.slice(1).toLowerCase();
+}
+
+function mapApiReport(item) {
+  const severity = String(item.severity || "LOW").toUpperCase();
+  const idValue = item.id ?? item.reportId ?? "";
+  const location = String(item.location || "");
+  const description = String(item.description || "");
+  const score = severity === "HIGH" ? 85 :
+                severity === "MEDIUM" ? 55 : 25;
+
+  return {
+    id: String(idValue).startsWith("WI-")
+      ? String(idValue) : "WI-" + idValue,
+    databaseId: item.id,
+    location,
+    description,
+    severity: ["HIGH", "MEDIUM", "LOW"].includes(severity)
+      ? severity : "LOW",
+    score,
+    status: normaliseStatus(item.status),
+    match: "",
+    createdAt: item.createdAt || item.created_at || null,
+    latitude: item.latitude ?? null,
+    longitude: item.longitude ?? null
+  };
+}
+
+function locationKey(location) {
+  return String(location || "")
+    .trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function updateMatches() {
+  const counts = {};
+
+  reports.forEach(r => {
+    const key = locationKey(r.location);
+    counts[key] = (counts[key] || 0) + 1;
+  });
+
+  reports.forEach(r => {
+    r.match = (counts[locationKey(r.location)] || 0) > 1
+      ? "Repeat area" : "New report";
+  });
+}
+
+function mapLinkForReport(r) {
+  if (r.latitude != null && r.longitude != null &&
+      Number.isFinite(Number(r.latitude)) &&
+      Number.isFinite(Number(r.longitude))) {
+    return "https://www.google.com/maps?q=" +
+      encodeURIComponent(Number(r.latitude) + "," + Number(r.longitude));
+  }
+  return "";
+}
+
+async function loadReports(showMessage = true) {
+  $("notice").textContent = "Loading reports from database...";
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "GET",
+      headers: { "Accept": "application/json" },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("API returned HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error("API response is not a report list");
+    }
+
+    reports = data.map(mapApiReport);
+    apiAvailable = true;
+    updateMatches();
+    render();
+
+    if (showMessage) {
+      $("notice").textContent =
+        "Loaded " + reports.length + " saved report(s) from the database.";
+    }
+  } catch (error) {
+    apiAvailable = false;
+    reports = [];
+    render();
+
+    $("notice").textContent =
+      "Could not load reports. Check Spring Boot, database settings and " +
+      API_URL + ". " + error.message;
+  }
+}
+
+function renderRoutes() {
+  const rank = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
+  const ordered = [...reports].sort((a, b) =>
+    rank[a.severity] - rank[b.severity] ||
+    String(a.status).localeCompare(String(b.status))
+  );
+
+  $("routeSummary").textContent = ordered.length
+    ? ordered.length +
+      " inspection task(s), ordered HIGH → MEDIUM → LOW by severity."
+    : "No saved reports yet. Submit a report to create an inspection task.";
+
+  $("routeRows").innerHTML = ordered.map((r, i) => {
+    const mapUrl = mapLinkForReport(r);
+
+    const locationCell = mapUrl
+      ? escapeHTML(r.location) +
+        '<br><a href="' + mapUrl +
+        '" target="_blank" rel="noopener noreferrer">View map</a>'
+      : escapeHTML(r.location);
+
+    return `<tr>
+      <td><strong>${i + 1}</strong></td>
+      <td><strong>${escapeHTML(r.id)}</strong></td>
+      <td>${locationCell}</td>
+      <td><span class="pill ${r.severity.toLowerCase()}">${escapeHTML(r.severity)}</span></td>
+      <td><span class="pill status">${escapeHTML(r.status)}</span></td>
+      <td class="priority">${r.score}/100</td>
+    </tr>`;
+  }).join("") ||
+    '<tr><td colspan="6">No inspection tasks available.</td></tr>';
+}
+
+function render() {
+  const q = $("search").value.trim().toLowerCase();
+  const f = $("filter").value;
+  const counts = { HIGH: 0, MEDIUM: 0, LOW: 0 };
+  const places = {};
+
+  reports.forEach(r => {
+    counts[r.severity] = (counts[r.severity] || 0) + 1;
+
+    const place = r.location.trim().replace(/\s+/g, " ");
+    const key = locationKey(place);
+
+    if (!places[key]) {
+      places[key] = { label: place, count: 0 };
+    }
+    places[key].count++;
+  });
+
+  const filtered = reports.filter(r =>
+    (f === "ALL" || r.severity === f) &&
+    (r.location + " " + r.id + " " + r.description)
+      .toLowerCase().includes(q)
+  );
+
+  $("rows").innerHTML = filtered.map(r => `<tr>
+    <td><strong>${escapeHTML(r.id)}</strong></td>
+    <td title="${escapeHTML(r.description)}">${escapeHTML(r.location)}</td>
+    <td><span class="pill ${r.severity.toLowerCase()}">${escapeHTML(r.severity)}</span></td>
+    <td class="priority">${r.score}/100</td>
+    <td><span class="pill status">${escapeHTML(r.status)}</span></td>
+    <td class="duplicate">${escapeHTML(r.match)}</td>
+  </tr>`).join("") ||
+    '<tr><td colspan="6">No matching incidents.</td></tr>';
+
+  $("total").textContent = reports.length;
+  $("highCount").textContent = counts.HIGH;
+
+  $("repeatCount").textContent =
+    Object.values(places).filter(p => p.count > 1).length;
+
+  $("pendingCount").textContent =
+    reports.filter(r => r.status.toLowerCase() === "pending").length;
+
+  ["HIGH", "MEDIUM", "LOW"].forEach(s => {
+    const pct = reports.length
+      ? Math.round(counts[s] * 100 / reports.length) : 0;
+
+    $(s.toLowerCase() + "Bar").style.width = pct + "%";
+    $(s.toLowerCase() + "Pct").textContent = pct + "%";
+  });
+
+  $("hotspots").innerHTML = Object.entries(places)
+    .filter(([key, p]) => p.count > 1)
+    .map(([key, p]) =>
+      '<div class="hotspot"><span>📍 ' +
+      escapeHTML(p.label) + '</span><strong>' +
+      p.count + ' reports</strong></div>'
+    ).join("") ||
+    '<p class="subtitle">No repeated locations in current data.</p>';
+
+  renderRoutes();
+}
+function openModal() {
+  $("modal").classList.add("open");
+  $("location").focus();
+}
+
+function closeModal() {
+  $("modal").classList.remove("open");
+}
+
+function clearGPS() {
+  $("latitude").value = "";
+  $("longitude").value = "";
+  $("gpsStatus").textContent =
+    "GPS cleared. You can enter the area manually.";
+  $("mapPreviewWrap").classList.add("hidden");
+  $("mapPreview").src = "about:blank";
+  $("openMapLink").href = "#";
+}
+
+function updateMapPreview(lat, lon) {
+  const query = encodeURIComponent(Number(lat) + "," + Number(lon));
+
+  $("mapPreview").src =
+    "https://maps.google.com/maps?q=" + query + "&z=16&output=embed";
+
+  $("openMapLink").href =
+    "https://www.google.com/maps?q=" + query;
+
+  $("mapPreviewWrap").classList.remove("hidden");
+}
+
+// Get current GPS location
+$("getLocation").addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    $("gpsStatus").textContent =
+      "GPS is not supported by this browser.";
+    return;
+  }
+
+  const button = $("getLocation");
+  button.disabled = true;
+  button.textContent = "Getting location...";
+  $("gpsStatus").textContent =
+    "Allow location permission if requested.";
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      $("latitude").value = String(lat);
+      $("longitude").value = String(lon);
+
+      $("gpsStatus").textContent =
+        "GPS captured: " + lat.toFixed(6) + ", " + lon.toFixed(6);
+
+      updateMapPreview(lat, lon);
+
+      if (!$("location").value.trim()) {
+        $("location").value =
+          "GPS: " + lat.toFixed(5) + ", " + lon.toFixed(5);
+      }
+
+      button.disabled = false;
+      button.textContent = "📍 Get current GPS";
+    },
+    error => {
+      const messages = {
+        1: "Location permission denied. Allow location access in browser settings.",
+        2: "Location unavailable. Check device GPS/location settings.",
+        3: "Location request timed out. Try again."
+      };
+
+      $("gpsStatus").textContent =
+        messages[error.code] || "Could not get GPS. Enter location manually.";
+
+      button.disabled = false;
+      button.textContent = "📍 Get current GPS";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    }
+  );
+});
+
+$("clearLocation").addEventListener("click", clearGPS);
+
+// Camera / gallery photo preview
+$("photo").addEventListener("change", () => {
+  const file = $("photo").files && $("photo").files[0];
+
+  if (photoPreviewUrl) {
+    URL.revokeObjectURL(photoPreviewUrl);
+    photoPreviewUrl = null;
+  }
+
+  if (!file) {
+    $("photoPreview").removeAttribute("src");
+    $("photoPreview").style.display = "none";
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    $("photo").value = "";
+    $("photoPreview").style.display = "none";
+    $("gpsStatus").textContent = "Please choose a valid image file.";
+    return;
+  }
+
+  photoPreviewUrl = URL.createObjectURL(file);
+  $("photoPreview").src = photoPreviewUrl;
+  $("photoPreview").style.display = "block";
+});
+
+// Existing dashboard controls
+$("search").addEventListener("input", render);
+$("filter").addEventListener("change", render);
+$("openForm").addEventListener("click", openModal);
+$("closeForm").addEventListener("click", closeModal);
+
+$("refreshRoutes").addEventListener("click", () => {
+  loadReports(false);
+});
+
+$("modal").addEventListener("click", event => {
+  if (event.target === $("modal")) closeModal();
+});
+
+// Submit report using the existing backend API
+$("reportForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const location = $("location").value.trim();
+  const description = $("description").value.trim();
+  const severity = $("severity").value;
+  const latitude = $("latitude").value;
+  const longitude = $("longitude").value;
+  const photoSelected = $("photo").files &&
+                        $("photo").files.length > 0;
+
+  if (!location || !description) {
+    $("notice").textContent =
+      "Please enter both a location and a description.";
+    return;
+  }
+
+  const button = $("submitReport");
+  button.disabled = true;
+  button.textContent = "Saving...";
+  $("notice").textContent = "Saving report to database...";
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        location: location,
+        description: description,
+        severity: severity
+      })
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || ("API returned HTTP " + response.status));
+    }
+
+    await response.json();
+
+    $("reportForm").reset();
+    clearGPS();
+
+    if (photoPreviewUrl) {
+      URL.revokeObjectURL(photoPreviewUrl);
+      photoPreviewUrl = null;
+    }
+
+    $("photoPreview").removeAttribute("src");
+    $("photoPreview").style.display = "none";
+
+    closeModal();
+    await loadReports(false);
+
+    if (apiAvailable) {
+      let message = "Report saved successfully to the database.";
+
+      if (latitude && longitude) {
+        message +=
+          " GPS was captured but is not stored by the current backend.";
+      }
+
+      if (photoSelected) {
+        message += " Photo was preview-only and not uploaded.";
+      }
+
+      $("notice").textContent = message;
+    }
+  } catch (error) {
+    $("notice").textContent =
+      "Report was not saved. Check the backend and database connection. " +
+      error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save report";
+  }
+});
+
+// Sidebar navigation
+document.querySelectorAll(".nav").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".nav").forEach(nav => {
+      nav.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    const page = button.dataset.page;
+
+    $("pageTitle").textContent = ({
+      dashboard: "Waste Intelligence Dashboard",
+      incidents: "All Waste Incidents",
+      hotspots: "Recurring Dumping Hotspots",
+      routes: "Daily Inspection Routes",
+      reports: "Report a Waste Incident"
+    })[page];
+
+    $("incidentPanel").classList.toggle(
+      "hidden", page === "routes" || page === "hotspots"
+    );
+
+    $("severityPanel").classList.toggle(
+      "hidden",
+      page === "routes" || page === "hotspots" || page === "reports"
+    );
+
+    $("hotspotPanel").classList.toggle(
+      "hidden",
+      page === "routes" || page === "incidents" || page === "reports"
+    );
+
+    $("routesPanel").classList.toggle("hidden", page !== "routes");
+
+    if (page === "reports") openModal();
+
+    if (page === "hotspots") {
+      $("hotspotPanel").classList.remove("hidden");
+    }
+  });
+});
+
+// Load saved database reports when the page opens
+loadReports();
+</script>
+</body>
+</html>
